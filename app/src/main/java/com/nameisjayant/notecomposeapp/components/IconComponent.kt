@@ -11,7 +11,7 @@ import androidx.compose.ui.res.painterResource
 
 
 @Composable
-fun IconDrawableComponent(
+fun IconComponent(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
     imageVector: ImageVector? = null,

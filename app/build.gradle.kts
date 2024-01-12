@@ -2,6 +2,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.firebase.gms.service)
+    id("kotlin-kapt")
 }
 
 android {
@@ -41,7 +44,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
     packaging {
         resources {
@@ -67,4 +70,18 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+    implementation(libs.navigation.compose)
+    implementation(libs.extended.icons.compose)
+    implementation(libs.preference.datastore)
+
+    implementation(libs.dagger.hilt)
+    kapt(libs.hilt.compiler)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.gms.google.service)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.coroutine.core)
+    implementation(libs.coroutine.android)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.realtime)
+    implementation(libs.compose.runtime.lifecycle)
 }

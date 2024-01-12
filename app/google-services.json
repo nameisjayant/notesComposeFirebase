@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "62336092674",
+    "project_id": "note-app-compose",
+    "storage_bucket": "note-app-compose.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62336092674:android:fa71176249d860de31751b",
+        "android_client_info": {
+          "package_name": "com.nameisjayant.notecomposeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMV0UrMCfFLaw2EreligBRitGneUHrigo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
