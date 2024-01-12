@@ -146,6 +146,7 @@ fun AddEditNoteScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             TextFieldComponent(
@@ -162,6 +163,7 @@ fun AddEditNoteScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 ),
                 modifier = Modifier.fillMaxSize()
             )
@@ -171,6 +173,25 @@ fun AddEditNoteScreen(
     BackHandler {
         navHostController.navigateUp()
         viewModel.setNote(null)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.updateNoteEventFlow.collectLatest {
+            isLoading = when (it) {
+                is ResultState.Success -> {
+                    navHostController.navigateUp()
+                    false
+                }
+
+                is ResultState.Failure -> {
+                    context.showMsg(it.msg.message ?: SOMETHING_WET_WRONG)
+                    false
+                }
+
+                ResultState.Loading -> true
+
+            }
+        }
     }
 
     LaunchedEffect(key1 = Unit) {

@@ -58,7 +58,7 @@ fun CustomAppIcon(
                     cornerRadius = CornerRadius(100f)
                 )
             }
-            .padding(20.dp)
+            .padding(16.dp)
             .size(30.dp),
         tint = tint
     )

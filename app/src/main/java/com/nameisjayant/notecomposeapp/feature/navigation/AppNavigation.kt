@@ -14,6 +14,7 @@ import androidx.navigation.compose.navigation
 import com.nameisjayant.notecomposeapp.data.viewmodel.NoteViewModel
 import com.nameisjayant.notecomposeapp.feature.bottombar.BottomBarRoutes
 import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.AddEditNoteScreen
+import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.EditProfileScreen
 import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.NoteScreen
 import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.ProfileScreen
 import com.nameisjayant.notecomposeapp.feature.register.ui.screens.LoginScreen
@@ -57,6 +58,9 @@ fun AppNavigation(
         }
         composable(NavigationRoutes.AddEditNote.route) {
             AddEditNoteScreen(navHostController = navHostController, viewModel = viewModel)
+        }
+        composable(NavigationRoutes.EditProfile.route){
+            EditProfileScreen(navHostController)
         }
     }
 }

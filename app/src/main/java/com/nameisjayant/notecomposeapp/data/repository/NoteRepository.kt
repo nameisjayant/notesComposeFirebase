@@ -7,6 +7,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.nameisjayant.BaseApplication
 import com.nameisjayant.notecomposeapp.data.model.Auth
+import com.nameisjayant.notecomposeapp.data.model.AuthResponse
 import com.nameisjayant.notecomposeapp.data.model.Note
 import com.nameisjayant.notecomposeapp.data.model.NoteResponse
 import com.nameisjayant.notecomposeapp.utils.NOTE
@@ -66,10 +67,10 @@ class NoteRepository @Inject constructor(
         }
     }
 
-    suspend fun addUserDetails(data: Auth): Flow<ResultState<String>> = callbackFlow {
+    suspend fun addUserDetails(data: Auth, id: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
 
-        db.child(USER).child(preferenceStore.getPref(PreferenceStore.userId).first()).push()
+        db.child(USER).child(id).push()
             .setValue(
                 data
             ).addOnCompleteListener {
@@ -80,6 +81,32 @@ class NoteRepository @Inject constructor(
             }
 
         awaitClose {
+            close()
+        }
+    }
+
+    suspend fun getUserDetails(): Flow<ResultState<List<AuthResponse>>> = callbackFlow {
+        trySend(ResultState.Loading)
+        val valueEvent = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val auth = snapshot.children.map {
+                    AuthResponse(
+                        auth = it.getValue(Auth::class.java),
+                        key = it.key
+                    )
+                }
+                trySend(ResultState.Success(auth))
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                trySend(ResultState.Failure(error.toException()))
+            }
+        }
+
+        db.child(USER).child(preferenceStore.getPref(PreferenceStore.userId).first())
+            .addValueEventListener(valueEvent)
+        awaitClose {
+            db.child(NOTE).removeEventListener(valueEvent)
             close()
         }
     }
@@ -152,6 +179,23 @@ class NoteRepository @Inject constructor(
 
         db.child(NOTE).child(preferenceStore.getPref(PreferenceStore.userId).first())
             .child(res.id ?: "").updateChildren(
+                map
+            ).addOnCompleteListener {
+                trySend(ResultState.Success("Update successfully..."))
+            }.addOnFailureListener {
+                trySend(ResultState.Failure(it))
+            }
+        awaitClose {
+            close()
+        }
+    }
+
+    suspend fun updateUserDetail(auth: AuthResponse): Flow<ResultState<String>> = callbackFlow {
+        trySend(ResultState.Loading)
+        val map = HashMap<String, Any>()
+        map["username"] = auth.auth?.username ?: ""
+        db.child(USER).child(preferenceStore.getPref(PreferenceStore.userId).first())
+            .child(auth.key ?: "").updateChildren(
                 map
             ).addOnCompleteListener {
                 trySend(ResultState.Success("Update successfully..."))

@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nameisjayant.notecomposeapp.data.model.Auth
+import com.nameisjayant.notecomposeapp.data.model.AuthResponse
 import com.nameisjayant.notecomposeapp.data.model.Note
 import com.nameisjayant.notecomposeapp.data.model.NoteResponse
 import com.nameisjayant.notecomposeapp.data.repository.NoteRepository
@@ -54,12 +55,35 @@ class NoteViewModel @Inject constructor(
         MutableSharedFlow()
     var addNoteEventFlow = _addNoteEventFlow.asSharedFlow()
         private set
+
+    private val _deleteNoteEventFlow: MutableSharedFlow<ResultState<String>> =
+        MutableSharedFlow()
+    var deleteNoteEventFlow = _deleteNoteEventFlow.asSharedFlow()
+        private set
+
+    private val _updateNoteEventFlow: MutableSharedFlow<ResultState<String>> =
+        MutableSharedFlow()
+    var updateNoteEventFlow = _updateNoteEventFlow.asSharedFlow()
+        private set
+
+
+    private val _updateUserDetailEventFlow: MutableSharedFlow<ResultState<String>> =
+        MutableSharedFlow()
+    var updateUserDetailEventFlow = _updateUserDetailEventFlow.asSharedFlow()
+        private set
+
     private val _editNote: MutableStateFlow<NoteResponse?> = MutableStateFlow(null)
     var editNote = _editNote.asStateFlow()
         private set
     private val _showNotesEventFlow: MutableStateFlow<ComposeUi<NoteResponse>> = MutableStateFlow(
         ComposeUi()
     )
+    private val _getUserDetailEventFlow: MutableStateFlow<ComposeUi<AuthResponse>> =
+        MutableStateFlow(
+            ComposeUi()
+        )
+    var getUserDetailEventFlow = _getUserDetailEventFlow.asStateFlow()
+        private set
     var showNotesEventFlow = _showNotesEventFlow.asStateFlow()
         private set
 
@@ -100,7 +124,7 @@ class NoteViewModel @Inject constructor(
             }
 
             is NoteEvent.AddUserDetailEvent -> {
-                noteRepository.addUserDetails(event.auth)
+                noteRepository.addUserDetails(event.auth, event.id)
                     .doOnLoading {
                         _addUserDetailEventFlow.emit(ResultState.Loading)
                     }.doOnFailure {
@@ -110,7 +134,17 @@ class NoteViewModel @Inject constructor(
                     }.collect()
             }
 
-            is NoteEvent.DeleteNoteEvent -> {}
+            is NoteEvent.DeleteNoteEvent -> {
+                noteRepository.deleteNote(event.id)
+                    .doOnLoading {
+                        _deleteNoteEventFlow.emit(ResultState.Loading)
+                    }.doOnFailure {
+                        _deleteNoteEventFlow.emit(ResultState.Failure(Throwable(it)))
+                    }.doOnSuccess {
+                        _deleteNoteEventFlow.emit(ResultState.Success(it))
+                    }.collect()
+            }
+
             NoteEvent.GetNoteEvent -> {
                 noteRepository.getNotes()
                     .doOnLoading {
@@ -152,10 +186,44 @@ class NoteViewModel @Inject constructor(
             }
 
             is NoteEvent.UpdateNoteEvent -> {
-
+                noteRepository.updateNote(event.note)
+                    .doOnLoading {
+                        _updateNoteEventFlow.emit(ResultState.Loading)
+                    }.doOnFailure {
+                        _updateNoteEventFlow.emit(ResultState.Failure(Throwable(it)))
+                    }.doOnSuccess {
+                        _updateNoteEventFlow.emit(ResultState.Success(it))
+                    }.collect()
             }
 
             NoteEvent.SignOutEvent -> noteRepository.signOut()
+            NoteEvent.GetUserDetailEvent -> {
+                noteRepository.getUserDetails()
+                    .doOnLoading {
+                        _getUserDetailEventFlow.value = ComposeUi(
+                            isLoading = true
+                        )
+                    }.doOnFailure {
+                        _getUserDetailEventFlow.value = ComposeUi(
+                            error = it?.message ?: SOMETHING_WET_WRONG
+                        )
+                    }.doOnSuccess {
+                        _getUserDetailEventFlow.value = ComposeUi(
+                            data = it
+                        )
+                    }.collect()
+            }
+
+            is NoteEvent.UpdateUserDetail -> {
+                noteRepository.updateUserDetail(event.data)
+                    .doOnLoading {
+                        _updateUserDetailEventFlow.emit(ResultState.Loading)
+                    }.doOnFailure {
+                        _updateUserDetailEventFlow.emit(ResultState.Failure(Throwable(it)))
+                    }.doOnSuccess {
+                        _updateUserDetailEventFlow.emit(ResultState.Success(it))
+                    }.collect()
+            }
         }
     }
 
@@ -171,10 +239,12 @@ sealed class NoteEvent {
 
     data class RegisterUserEvent(val auth: Auth) : NoteEvent()
     data class LoginUserEvent(val auth: Auth) : NoteEvent()
-    data class AddUserDetailEvent(val auth: Auth) : NoteEvent()
+    data class AddUserDetailEvent(val auth: Auth, val id: String) : NoteEvent()
     data class AddNoteEvent(val note: Note) : NoteEvent()
     data object GetNoteEvent : NoteEvent()
     data class DeleteNoteEvent(val id: String) : NoteEvent()
     data class UpdateNoteEvent(val note: NoteResponse) : NoteEvent()
     data object SignOutEvent : NoteEvent()
+    data object GetUserDetailEvent : NoteEvent()
+    data class UpdateUserDetail(val data: AuthResponse) : NoteEvent()
 }

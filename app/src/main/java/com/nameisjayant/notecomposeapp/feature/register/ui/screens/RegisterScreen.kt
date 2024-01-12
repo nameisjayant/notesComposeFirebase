@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.nameisjayant.notecomposeapp.R
 import com.nameisjayant.notecomposeapp.components.ButtonComponent
@@ -41,6 +42,7 @@ import com.nameisjayant.notecomposeapp.utils.SOMETHING_WET_WRONG
 import com.nameisjayant.notecomposeapp.utils.getActivity
 import com.nameisjayant.notecomposeapp.utils.navigateToWithPopping
 import com.nameisjayant.notecomposeapp.utils.showMsg
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -59,6 +61,8 @@ fun RegisterScreen(
         }
     }
     var isLoading by remember { mutableStateOf(false) }
+    val userId by viewModel.getPref(PreferenceStore.userId)
+        .collectAsStateWithLifecycle(initialValue = "")
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -153,12 +157,14 @@ fun RegisterScreen(
         viewModel.createUserEventFlow.collectLatest {
             isLoading = when (it) {
                 is ResultState.Success -> {
+                    delay(3000)
                     viewModel.onEvent(
                         NoteEvent.AddUserDetailEvent(
                             Auth(
                                 username = name,
                                 email, password
-                            )
+                            ),
+                            id = userId
                         )
                     )
                     true
