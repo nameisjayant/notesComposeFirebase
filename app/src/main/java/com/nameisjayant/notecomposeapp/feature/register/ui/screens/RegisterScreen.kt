@@ -4,9 +4,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -16,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -55,14 +59,23 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current.getActivity()!!
+    val emailValidationFailedException by viewModel.emailValidation.collectAsStateWithLifecycle()
+    val passwordValidation by viewModel.passwordValidation.collectAsStateWithLifecycle()
     val isCompleted by remember {
         derivedStateOf {
-            name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
+            email.isNotEmpty() && password.isNotEmpty() && emailValidationFailedException.isEmpty()
+                    && passwordValidation.isEmpty()
         }
     }
     var isLoading by remember { mutableStateOf(false) }
     val userId by viewModel.getPref(PreferenceStore.userId)
         .collectAsStateWithLifecycle(initialValue = "")
+    LaunchedEffect(key1 = email) {
+        viewModel.checkEmailValidation(email.trim())
+    }
+    LaunchedEffect(key1 = password) {
+        viewModel.checkPasswordValidation(password.trim())
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -92,6 +105,16 @@ fun RegisterScreen(
                         keyboardType = KeyboardType.Email
                     ),
                 )
+                if (emailValidationFailedException.isNotEmpty() && email.isNotEmpty()) {
+                    SpacerHeight()
+                    Text(
+                        text = emailValidationFailedException,
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = Color.Red
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 SpacerHeight(16.dp)
                 TextFieldComponent(
                     value = password,
@@ -102,6 +125,16 @@ fun RegisterScreen(
                         keyboardType = KeyboardType.Password
                     )
                 )
+                if (passwordValidation.isNotEmpty() && password.isNotEmpty()) {
+                    SpacerHeight()
+                    Text(
+                        text = passwordValidation,
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = Color.Red
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
         Column(

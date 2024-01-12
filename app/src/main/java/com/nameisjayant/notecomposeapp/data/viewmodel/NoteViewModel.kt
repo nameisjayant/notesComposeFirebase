@@ -10,6 +10,7 @@ import com.nameisjayant.notecomposeapp.data.model.NoteResponse
 import com.nameisjayant.notecomposeapp.data.repository.NoteRepository
 import com.nameisjayant.notecomposeapp.utils.EMAIL_PATTERN
 import com.nameisjayant.notecomposeapp.utils.INVALID_EMAIL
+import com.nameisjayant.notecomposeapp.utils.PASSWORD_VALIDATION
 import com.nameisjayant.notecomposeapp.utils.PreferenceStore
 import com.nameisjayant.notecomposeapp.utils.ResultState
 import com.nameisjayant.notecomposeapp.utils.SOMETHING_WET_WRONG
@@ -35,6 +36,9 @@ class NoteViewModel @Inject constructor(
 
     private val _emailValidation: MutableStateFlow<String> = MutableStateFlow("")
     var emailValidation = _emailValidation.asStateFlow()
+        private set
+    private val _passwordValidation: MutableStateFlow<String> = MutableStateFlow("")
+    var passwordValidation = _passwordValidation.asStateFlow()
         private set
 
     private val _createUserEventFlow: MutableSharedFlow<ResultState<String>> = MutableSharedFlow()
@@ -101,6 +105,15 @@ class NoteViewModel @Inject constructor(
             ) {
                 _emailValidation.value = INVALID_EMAIL
             } else _emailValidation.value = ""
+    }
+
+    fun checkPasswordValidation(password:String){
+        if(password.isEmpty())
+            _passwordValidation.value = ""
+        else if(password.trim().length > 6)
+            _passwordValidation.value = ""
+        else
+            _passwordValidation.value = PASSWORD_VALIDATION
     }
 
     fun setPref(key: Preferences.Key<String>, value: String) = viewModelScope.launch {

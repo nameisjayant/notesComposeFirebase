@@ -159,15 +159,24 @@ class NoteRepository @Inject constructor(
 
     suspend fun deleteNote(key: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
-        db.child(NOTE).child(preferenceStore.getPref(PreferenceStore.userId).first()).child(key)
-            .removeValue()
-            .addOnCompleteListener {
-                trySend(ResultState.Success("item Deleted"))
-            }.addOnFailureListener {
-                trySend(ResultState.Failure(it))
+
+        val reference =
+            db.child(NOTE).child(preferenceStore.getPref(PreferenceStore.userId).first()).child(key)
+
+        val valueListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists())
+                    reference.removeValue()
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                trySend(ResultState.Failure(error.toException()))
+            }
+
+        }
+        reference.addListenerForSingleValueEvent(valueListener)
         awaitClose {
-            close()
+            reference.removeEventListener(valueListener)
         }
     }
 
