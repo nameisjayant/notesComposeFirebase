@@ -19,6 +19,7 @@ import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.NoteScreen
 import com.nameisjayant.notecomposeapp.feature.notes.ui.screens.ProfileScreen
 import com.nameisjayant.notecomposeapp.feature.register.ui.screens.LoginScreen
 import com.nameisjayant.notecomposeapp.feature.register.ui.screens.RegisterScreen
+import com.nameisjayant.notecomposeapp.feature.register.ui.screens.ResetPasswordScreen
 import com.nameisjayant.notecomposeapp.feature.register.ui.screens.SplashScreen
 
 
@@ -61,6 +62,9 @@ fun AppNavigation(
         }
         composable(NavigationRoutes.EditProfile.route){
             EditProfileScreen(navHostController)
+        }
+        composable(NavigationRoutes.ResetPassword.route){
+            ResetPasswordScreen(navHostController = navHostController)
         }
     }
 }

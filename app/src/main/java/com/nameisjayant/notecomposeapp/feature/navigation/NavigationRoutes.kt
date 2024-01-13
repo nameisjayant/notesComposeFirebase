@@ -10,4 +10,5 @@ sealed class NavigationRoutes(val route: String) {
     data object Main : NavigationRoutes("/main")
     data object AddEditNote : NavigationRoutes("/addEditNote")
     data object EditProfile : NavigationRoutes("/edit")
+    data object ResetPassword : NavigationRoutes("/resetPassword")
 }

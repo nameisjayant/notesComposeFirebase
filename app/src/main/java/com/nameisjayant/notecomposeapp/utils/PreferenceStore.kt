@@ -22,7 +22,7 @@ class PreferenceStore @Inject constructor(
         private val Context.datastore by preferencesDataStore(PREFERENCE)
         val index = stringPreferencesKey("index")
         val userId = stringPreferencesKey("userId")
-        val name = stringPreferencesKey("username")
+        val email = stringPreferencesKey("email")
     }
 
     suspend fun setPref(

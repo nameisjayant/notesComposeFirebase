@@ -76,6 +76,11 @@ class NoteViewModel @Inject constructor(
     var updateUserDetailEventFlow = _updateUserDetailEventFlow.asSharedFlow()
         private set
 
+    private val _resetPasswordEventFlow: MutableSharedFlow<ResultState<String>> =
+        MutableSharedFlow()
+    var resetPasswordEventFlow = _resetPasswordEventFlow.asSharedFlow()
+        private set
+
     private val _editNote: MutableStateFlow<NoteResponse?> = MutableStateFlow(null)
     var editNote = _editNote.asStateFlow()
         private set
@@ -107,10 +112,10 @@ class NoteViewModel @Inject constructor(
             } else _emailValidation.value = ""
     }
 
-    fun checkPasswordValidation(password:String){
-        if(password.isEmpty())
+    fun checkPasswordValidation(password: String) {
+        if (password.isEmpty())
             _passwordValidation.value = ""
-        else if(password.trim().length > 6)
+        else if (password.trim().length > 6)
             _passwordValidation.value = ""
         else
             _passwordValidation.value = PASSWORD_VALIDATION
@@ -227,7 +232,7 @@ class NoteViewModel @Inject constructor(
                     }.collect()
             }
 
-            is NoteEvent.UpdateUserDetail -> {
+            is NoteEvent.UpdateUserDetailEvent -> {
                 noteRepository.updateUserDetail(event.data)
                     .doOnLoading {
                         _updateUserDetailEventFlow.emit(ResultState.Loading)
@@ -235,6 +240,17 @@ class NoteViewModel @Inject constructor(
                         _updateUserDetailEventFlow.emit(ResultState.Failure(Throwable(it)))
                     }.doOnSuccess {
                         _updateUserDetailEventFlow.emit(ResultState.Success(it))
+                    }.collect()
+            }
+
+            is NoteEvent.ResetPasswordEvent -> {
+                noteRepository.resetPassword(event.email)
+                    .doOnLoading {
+                        _resetPasswordEventFlow.emit(ResultState.Loading)
+                    }.doOnFailure {
+                        _resetPasswordEventFlow.emit(ResultState.Failure(Throwable(it)))
+                    }.doOnSuccess {
+                        _resetPasswordEventFlow.emit(ResultState.Success(it))
                     }.collect()
             }
         }
@@ -259,5 +275,6 @@ sealed class NoteEvent {
     data class UpdateNoteEvent(val note: NoteResponse) : NoteEvent()
     data object SignOutEvent : NoteEvent()
     data object GetUserDetailEvent : NoteEvent()
-    data class UpdateUserDetail(val data: AuthResponse) : NoteEvent()
+    data class UpdateUserDetailEvent(val data: AuthResponse) : NoteEvent()
+    data class ResetPasswordEvent(val email: String) : NoteEvent()
 }

@@ -17,4 +17,8 @@
     <string name="add_note_">Add Note</string>
     <string name="add_note">Add Note</string>
     <string name="update">Update</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="next">Next</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="enter_you_email_below_a_link_will_be_send_to_your_email_address_where_you_can_reset_your_password">Enter you email below a link will be send to your email address, where you can reset your password.</string>
 </resources>

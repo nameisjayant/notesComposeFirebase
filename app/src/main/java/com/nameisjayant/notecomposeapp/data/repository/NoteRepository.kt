@@ -38,6 +38,7 @@ class NoteRepository @Inject constructor(
             if (it.isSuccessful) {
                 BaseApplication.scope.launch {
                     preferenceStore.setPref(PreferenceStore.userId, authDb.currentUser?.uid ?: "")
+                    preferenceStore.setPref(PreferenceStore.email, data?.email ?: "")
                 }
                 trySend(ResultState.Success("User created successfully"))
             }
@@ -58,6 +59,7 @@ class NoteRepository @Inject constructor(
         ).addOnSuccessListener {
             BaseApplication.scope.launch {
                 preferenceStore.setPref(PreferenceStore.userId, authDb.currentUser?.uid ?: "")
+                preferenceStore.setPref(PreferenceStore.email, auth?.email ?: "")
             }
             trySend(ResultState.Success("login Successfully"))
         }.addOnFailureListener {
@@ -222,4 +224,20 @@ class NoteRepository @Inject constructor(
     }
 
     fun signOut() = authDb.signOut()
+
+    fun resetPassword(
+        email:String
+    ): Flow<ResultState<String>> = callbackFlow {
+        authDb.sendPasswordResetEmail(email)
+            .addOnCompleteListener {
+                if (it.isSuccessful)
+                    trySend(ResultState.Success("Password reset email send to your email address"))
+            }.addOnFailureListener {
+                trySend(ResultState.Failure(it))
+            }
+
+        awaitClose {
+            close()
+        }
+    }
 }

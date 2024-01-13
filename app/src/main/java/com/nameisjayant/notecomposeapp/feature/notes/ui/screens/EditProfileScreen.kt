@@ -83,7 +83,7 @@ fun EditProfileScreen(
         ButtonComponent(title = stringResource(R.string.update)) {
             if (username.isNotEmpty())
                 viewModel.onEvent(
-                    NoteEvent.UpdateUserDetail(
+                    NoteEvent.UpdateUserDetailEvent(
                         AuthResponse(
                             key = key,
                             auth = Auth(username = username)
