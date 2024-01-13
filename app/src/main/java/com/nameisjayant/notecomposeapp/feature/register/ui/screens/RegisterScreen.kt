@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.nameisjayant.notecomposeapp.R
 import com.nameisjayant.notecomposeapp.components.ButtonComponent
 import com.nameisjayant.notecomposeapp.components.HavAccountComponent
+import com.nameisjayant.notecomposeapp.components.IconButtonComponent
 import com.nameisjayant.notecomposeapp.components.LoadingComponent
 import com.nameisjayant.notecomposeapp.components.RegisterLoginTextComponent
 import com.nameisjayant.notecomposeapp.components.SpacerHeight
@@ -67,6 +70,7 @@ fun RegisterScreen(
                     && passwordValidation.isEmpty()
         }
     }
+    var isPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val userId by viewModel.getPref(PreferenceStore.userId)
         .collectAsStateWithLifecycle(initialValue = "")
@@ -93,7 +97,8 @@ fun RegisterScreen(
                     ),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    maxLine = 1
                 )
                 SpacerHeight(16.dp)
                 TextFieldComponent(
@@ -104,6 +109,7 @@ fun RegisterScreen(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email
                     ),
+                    maxLine = 1
                 )
                 if (emailValidationFailedException.isNotEmpty() && email.isNotEmpty()) {
                     SpacerHeight()
@@ -123,7 +129,17 @@ fun RegisterScreen(
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButtonComponent(
+                            imageVector = Icons.Default.RemoveRedEye,
+                            tint = if (isPasswordVisible) Color.Black else Color.LightGray
+                        ) {
+                            isPasswordVisible = !isPasswordVisible
+                        }
+                    },
+                    isPasswordVisible = isPasswordVisible,
+                    maxLine = 1
                 )
                 if (passwordValidation.isNotEmpty() && password.isNotEmpty()) {
                     SpacerHeight()
