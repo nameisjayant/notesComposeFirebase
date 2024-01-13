@@ -1,5 +1,6 @@
 package com.nameisjayant.notecomposeapp.feature.notes.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,5 +107,8 @@ fun ProfileScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.onEvent(NoteEvent.GetUserDetailEvent)
+    }
+    BackHandler {
+        navigateToWithPopping(navHostController,NavigationRoutes.Main.route)
     }
 }

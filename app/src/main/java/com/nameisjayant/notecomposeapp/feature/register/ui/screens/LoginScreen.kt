@@ -1,5 +1,6 @@
 package com.nameisjayant.notecomposeapp.feature.register.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +43,7 @@ import com.nameisjayant.notecomposeapp.utils.ONE
 import com.nameisjayant.notecomposeapp.utils.PreferenceStore
 import com.nameisjayant.notecomposeapp.utils.ResultState
 import com.nameisjayant.notecomposeapp.utils.SOMETHING_WET_WRONG
+import com.nameisjayant.notecomposeapp.utils.getActivity
 import com.nameisjayant.notecomposeapp.utils.navigateToWithPopping
 import com.nameisjayant.notecomposeapp.utils.showMsg
 import kotlinx.coroutines.flow.collectLatest
@@ -55,7 +57,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val context = LocalContext.current.getActivity()!!
     val emailValidationFailedException by viewModel.emailValidation.collectAsStateWithLifecycle()
     val passwordValidation by viewModel.passwordValidation.collectAsStateWithLifecycle()
     val isCompleted by remember {
@@ -169,6 +171,10 @@ fun LoginScreen(
 
             }
         }
+    }
+
+    BackHandler {
+        context.finish()
     }
 
     if (isLoading)

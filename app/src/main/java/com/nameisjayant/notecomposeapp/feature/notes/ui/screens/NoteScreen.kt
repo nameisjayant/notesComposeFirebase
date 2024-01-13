@@ -1,5 +1,6 @@
 package com.nameisjayant.notecomposeapp.feature.notes.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,6 +38,7 @@ import com.nameisjayant.notecomposeapp.feature.navigation.NavigationRoutes
 import com.nameisjayant.notecomposeapp.ui.theme.Pink80
 import com.nameisjayant.notecomposeapp.utils.ResultState
 import com.nameisjayant.notecomposeapp.utils.SOMETHING_WET_WRONG
+import com.nameisjayant.notecomposeapp.utils.getActivity
 import com.nameisjayant.notecomposeapp.utils.showMsg
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
@@ -51,7 +53,7 @@ fun NoteScreen(
     val noteResponse by viewModel.showNotesEventFlow.collectAsStateWithLifecycle()
     val userDetail by viewModel.getUserDetailEventFlow.collectAsStateWithLifecycle()
     var isLoading by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val context = LocalContext.current.getActivity()!!
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -78,13 +80,13 @@ fun NoteScreen(
                         searchNotes(search, noteResponse.data),
                         key = { it.id ?: it.hashCode() }) {
                         NoteEachRow(note = NoteResponse(
-                            "",
+                            it.id,
                             it.note
                         ), editNote = {
                             viewModel.setNote(it)
                             navHostController.navigate(NavigationRoutes.AddEditNote.route)
-                        }, deleteNote = {
-                            viewModel.onEvent(NoteEvent.DeleteNoteEvent(it))
+                        }, deleteNote = { noteId ->
+                            viewModel.onEvent(NoteEvent.DeleteNoteEvent(it.id ?: ""))
                         })
                     }
                 }
@@ -124,6 +126,10 @@ fun NoteScreen(
 
             }
         }
+    }
+
+    BackHandler {
+        context.finish()
     }
 
 }

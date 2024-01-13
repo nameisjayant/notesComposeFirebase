@@ -104,7 +104,7 @@ fun AddEditNoteScreen(
                         color = Color.Black, fontWeight = FontWeight.W600, fontSize = 20.sp
                     )
                 )
-                if (title.isNotEmpty() && description.isNotEmpty())
+                if (title.trim().isNotEmpty() && description.trim().isNotEmpty())
                     IconButton(onClick = {
                         if (currentNote == null)
                             viewModel.onEvent(

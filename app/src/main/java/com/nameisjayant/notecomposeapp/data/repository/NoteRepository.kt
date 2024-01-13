@@ -1,5 +1,6 @@
 package com.nameisjayant.notecomposeapp.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -136,6 +137,7 @@ class NoteRepository @Inject constructor(
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 val items = snapshot.children.map {
+                    Log.d("main", "onDataChange:${it.key} ")
                     NoteResponse(
                         id = it.key,
                         note = it.getValue(Note::class.java),
@@ -159,7 +161,10 @@ class NoteRepository @Inject constructor(
 
     suspend fun deleteNote(key: String): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
-
+        Log.d(
+            "main",
+            "userId: ${preferenceStore.getPref(PreferenceStore.userId).first()} , key : $key"
+        )
         val reference =
             db.child(NOTE).child(preferenceStore.getPref(PreferenceStore.userId).first()).child(key)
 

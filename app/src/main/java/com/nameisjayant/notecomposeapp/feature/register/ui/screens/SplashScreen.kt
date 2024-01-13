@@ -38,7 +38,7 @@ fun SplashScreen(
         delay(2000)
         when (index) {
             ONE -> navHostController.navigate(NavigationRoutes.Main.route)
-            else -> navHostController.navigate(NavigationRoutes.Register.route)
+            else -> navHostController.navigate(NavigationRoutes.Login.route)
         }
     }
     Column(
