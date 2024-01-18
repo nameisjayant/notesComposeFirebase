@@ -1,15 +1,16 @@
 package com.nameisjayant.notecomposeapp.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -36,14 +37,20 @@ fun TextFieldComponent(
         unfocusedContainerColor = Color.Transparent,
         focusedIndicatorColor = Pink80,
         disabledContainerColor = Color.Transparent,
-    )
+    ),
+    onClick: () -> Unit = {}
 ) {
     TextField(
         value = value, onValueChange = onValueChange,
         placeholder = {
             Text(text = placeholder)
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() },
         trailingIcon = trailingIcon,
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         colors = colors,

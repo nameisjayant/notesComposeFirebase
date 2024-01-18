@@ -41,6 +41,10 @@ class NoteViewModel @Inject constructor(
     var passwordValidation = _passwordValidation.asStateFlow()
         private set
 
+    private val _profileDetail: MutableStateFlow<AuthResponse?> = MutableStateFlow(null)
+    var profileDetail = _profileDetail.asStateFlow()
+        private set
+
     private val _createUserEventFlow: MutableSharedFlow<ResultState<String>> = MutableSharedFlow()
     var createUserEventFlow = _createUserEventFlow.asSharedFlow()
         private set
@@ -98,6 +102,10 @@ class NoteViewModel @Inject constructor(
 
     fun setNote(notes: NoteResponse?) {
         _editNote.value = notes
+    }
+
+    fun setProfile(data:AuthResponse){
+        _profileDetail.value = data
     }
 
     fun checkEmailValidation(email: String) {

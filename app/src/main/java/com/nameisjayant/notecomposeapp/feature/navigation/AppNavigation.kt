@@ -54,14 +54,14 @@ fun AppNavigation(
                 )
             }
             composable(BottomBarRoutes.Profile.route) {
-                ProfileScreen(navHostController)
+                ProfileScreen(navHostController,viewModel)
             }
         }
         composable(NavigationRoutes.AddEditNote.route) {
             AddEditNoteScreen(navHostController = navHostController, viewModel = viewModel)
         }
         composable(NavigationRoutes.EditProfile.route){
-            EditProfileScreen(navHostController)
+            EditProfileScreen(navHostController,viewModel)
         }
         composable(NavigationRoutes.ResetPassword.route){
             ResetPasswordScreen(navHostController = navHostController)

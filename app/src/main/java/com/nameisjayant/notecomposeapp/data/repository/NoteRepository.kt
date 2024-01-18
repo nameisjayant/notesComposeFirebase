@@ -210,6 +210,9 @@ class NoteRepository @Inject constructor(
         trySend(ResultState.Loading)
         val map = HashMap<String, Any>()
         map["username"] = auth.auth?.username ?: ""
+        map["mobileNumber"] = auth.auth?.mobileNumber ?: ""
+        map["dob"] = auth.auth?.dob ?: ""
+        map["gender"] = auth.auth?.gender ?: ""
         db.child(USER).child(preferenceStore.getPref(PreferenceStore.userId).first())
             .child(auth.key ?: "").updateChildren(
                 map
